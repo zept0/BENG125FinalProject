@@ -1,5 +1,7 @@
 # BENG125FinalProject
+
 BENG 125 - UCSD
+
 Team Members: Jose Zaragoza, Allen Le, Jacqueline Olness, Kokila Perera, and Linh N Le
 
 Introduction: 
