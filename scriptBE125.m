@@ -28,7 +28,7 @@ ds = -a*s.*i;
 di = (a-b)*s.*i+(b*N-g-b*i)*i;
 
 figure
-quiver(x,y,ds,di)
+quiver(s,i,ds,di)
 % 2. Linearize the system using Jacobian (as dI/dt is non-linear in terms of I while system is in 2D)
 % 3. Find eigenvalues and eigenvectors in terms of tuning parameters, I* &
 %    S*
