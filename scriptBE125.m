@@ -42,6 +42,7 @@
 %    (eg. I vs t, or we can modify I as needed to represent some "search term index")
 %%%%%%%%%%%%%%%%%%%%%%
 
+%%
 clear all; 
 clc;
 close all; 
@@ -50,8 +51,59 @@ format long;
 %% Load experimental data
 
 
-%% Run Model Fitting
+%% Defining Model
 
+% Define initial conditions
+syms alpha beta gamma C0 C1 t S I
+N = 2e2; t0 = 0; S0 = 10; I0 = N - S0;
+
+% Define initial tuning parameters
+a0 = 1.62e-4; b0 = 1.52e-4; g0 = 3e-2; % parameters are based on 'blog' values
+
+% Define fixed point
+I_f = N - gamma/beta; S_f = 0; % for a persisting meme
+
+% Defining Jacobian matrix at FP to obtain eigenvalues and eigenvectors from
+J_E = [-1*alpha*I_f, -1*alpha*S_f;...
+       (alpha - beta)*I_f, beta*N-gamma-2*beta*I_f];
+   
+% Get eigenvalues and eigenvectors
+[vec,val] = eig(J_E);
+lambda1 = val(1,1); lambda2 = val(2,2);
+
+% Forming time-dependent equations: eqns = [S,I]
+eqns = [S == C0*exp(lambda1*t)*vec(1,1) + C1*exp(lambda2*t)*vec(1,2),...
+        I == C0*exp(lambda1*t)*vec(2,1) + C1*exp(lambda2*t)*vec(2,2)];
+
+%% Run Model Fitting till least squares fit produces the best result
+
+% Begin LOOP
+
+% Applying tuning parameters
+eqns = vpa(subs(eqns,[alpha,beta,gamma],[a0,b0,g0]));
+
+% Apply initial conditions
+eqns0 = subs(eqns,[S,I,t],[S0,I0,t0]);
+
+%Solving for constants using initial conditions
+[sol_C0, sol_C1] = solve(eqns0,[C0,C1]);
+eqns = subs(eqns,[C0,C1],[sol_C0, sol_C1]);
+
+% Obtain values for linear regression
+time = [0:1000:20000];
+tempS = subs(eqns(1),t,time);
+tempI = subs(eqns(2),t,time);
+
+for c = 1:length(time)
+    S_final(c) = double(solve(tempS(c),S));
+    I_final(c) = double(solve(tempI(c),I));
+end
+
+% Carry out least squares fit to change a0, b0, g0
+
+% END LOOP when fitting is sufficient
 
 %% Plot Results
 
+figure(1);
+plot(time,I_final);
