@@ -24,11 +24,11 @@ b = 3.91*10^-4;
 g = 1.26*10^-2;
 
 [s,i] = meshgrid(-2:0.2:2,-2:0.2:2);
-u = -a*s.*i;
-v = (a-b)*s.*i+(b*N-g-b*i)*i;
+ds = -a*s.*i;
+di = (a-b)*s.*i+(b*N-g-b*i)*i;
 
 figure
-quiver(x,y,u,v)
+quiver(x,y,ds,di)
 % 2. Linearize the system using Jacobian (as dI/dt is non-linear in terms of I while system is in 2D)
 % 3. Find eigenvalues and eigenvectors in terms of tuning parameters, I* &
 %    S*
